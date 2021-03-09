@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Six Boxes</title>
+	<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+	<script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {     
+        document.querySelector('#red_box_bottom_right').addEventListener("click",myFunction);
+        // addEventListener(event, function, useCapture)
+        function myFunction(){
+          
+			document.querySelector("#yellow_box").emit("moveYellow");
+        }
+      });
+
+</script>
+
+<script>
+	// https://stackoverflow.com/questions/47921013/play-sound-on-click-in-a-frame
+	AFRAME.registerComponent('audiohandler', {
+  init:function() {
+     let playing = false;
+     let audio = document.querySelector("#lowbeep");
+     this.el.addEventListener('click', () => {
+          if(!playing) {
+              audio.play();
+           } else {
+              audio.pause();
+              audio.currentTime = 0;
+           }
+           playing = !playing;
+     });
+  }
+})
+</script>
+
+
+
+
+</head>
+
+<body>
+	<a-scene>
+
+		<a-assets>
+			<a-sound id="lowbeep" src="assets/low_beep.wav"></a-sound>
+		</a-assets>
+		<a-sky color="darkgray"></a-sky>
+		<!-- Camera -->
+		<a-camera>
+			<a-entity cursor="fuse: true; fuseTimeout: 2000;" position="0 0 -1"
+			raycaster="objects: .clickable"
+			geometry="primitive: sphere; radius:0.005;"
+			material="color: #000000; shader: flat;"
+			animation__enter="property: scale; to:3 3 3; dur: 2000; easing: linear; startEvents: mouseenter;"
+			event-set__reset="_event: animationcomplete__enter; scale: 1 1 1"
+			animation__leave="property: scale; to:1 1 1; dur: 2000; easing: linear; startEvents: mouseleave;"
+			>
+			</a-entity>
+			<!-- <a-entity position=" 0 1 0" rotation="-12 0 0">
+				<a-cursor raycaster="showLine:true">
+
+				</a-cursor>
+			</a-entity> -->
+		</a-camera>
+
+
+		<a-entity vive-controls="hand: left"></a-entity>
+		<a-entity vive-controls="hand: right"></a-entity>
+		<!-- Left -->
+		<!-- Bottom Red Box -->
+		<a-box class = "clickable" id="red_box_bottom_left" color="#AA0000" position="-2 0 -7"
+			event-set__entered="_event: mouseenter; material.color:#FF0000;"
+			event-set__leaving="_event: mouseleave; material.color:#AA0000;"
+			event-set__targetchange="_event:click; _target:#green_box; material.color:#00AAFF;">
+		</a-box>
+		<!-- Top Green Box -->
+		<a-box id="green_box" color="#00AA00" position="-2 3 -7"
+			event-set__targetrestore="_event:click; material.color:#00AA00;">
+		</a-box>
+
+		<!-- Center -->
+		<!-- Bottom Red Box -->
+		<a-box class="clickable" id="red_box_bottom_center" color="#AA0000" position="0 0 -7"
+			event-set__entered="_event: mouseenter; material.color:#FF0000;"
+			event-set__leaving="_event: mouseleave; material.color:#AA0000;"
+			event-set__targetappear="_event: click; _target:#blue_box; visible:true;"
+			event-set__blueboxy="_event: click; _target:#green_box; material.color:#00AAFF;">
+		</a-box>
+		<!-- Top Blue Box -->
+		<a-box id="blue_box" color="#0000AA" position="0 3 -7" visible="false"
+			event-set__targetdisappear="_event: click; visible:false;">
+		</a-box>
+
+		<!-- Right -->
+		<!-- Bottom Red Box -->
+		<a-box audiohandler class="clickable" id="red_box_bottom_right" color="#AA0000" position="2 0 -7"
+			event-set__entered="_event: mouseenter; material.color:#FF0000;"
+			event-set__leaving="_event: mouseleave; material.color:#AA0000;">
+		</a-box>
+		<!-- Top Yellow Box -->
+		<a-box class="clickable" id="yellow_box" color="#FFAA00" position="2 3 -7"
+		animation="property: position; from: 2 3 -7; to: 2 0 -7; startEvents: moveYellow; delay: 2000; dur: 2000;"
+		>
+		</a-box>
+	</a-scene>
+</body>
+
+</html>
